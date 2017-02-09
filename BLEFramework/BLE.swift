@@ -151,7 +151,7 @@ class BLE: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
         self.delegate?.bleDidUpdateState()
     }
     
-    func centralManager(central: CBCentralManager, didDiscoverPeripheral peripheral: CBPeripheral, advertisementData: [String : AnyObject],RSSI: NSNumber) {
+    func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
         print("[DEBUG] Find peripheral: \(peripheral.identifier.uuidString) RSSI: \(RSSI)")
         
         let index = peripherals.index { $0.identifier.uuidString == peripheral.identifier.uuidString }
@@ -163,9 +163,10 @@ class BLE: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
         }
     }
     
-    func centralManager(central: CBCentralManager, didFailToConnectPeripheral peripheral: CBPeripheral, error: NSError?) {
-        print("[ERROR] Could not connecto to peripheral \(peripheral.identifier.uuidString) error: \(error!.description)")
+    func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
+        print("[ERROR] Could not connecto to peripheral \(peripheral.identifier.uuidString) error: \(error!.localizedDescription)")
     }
+   
     
     func centralManager(central: CBCentralManager, didConnectPeripheral peripheral: CBPeripheral) {
         
@@ -179,12 +180,11 @@ class BLE: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
         self.delegate?.bleDidConnectToPeripheral()
     }
     
-    func centralManager(central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: NSError?) {
-        
+    func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         var text = "[DEBUG] Disconnected from peripheral: \(peripheral.identifier.uuidString)"
         
         if error != nil {
-            text += ". Error: \(error!.description)"
+            text += ". Error: \(error!.localizedDescription)"
         }
         
         print(text)
@@ -197,10 +197,9 @@ class BLE: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     }
     
     // MARK: CBPeripheral delegate
-    func peripheral(peripheral: CBPeripheral, didDiscoverServices error: NSError?) {
-        
+    func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
         if error != nil {
-            print("[ERROR] Error discovering services. \(error!.description)")
+            print("[ERROR] Error discovering services. \(error!.localizedDescription)")
             return
         }
         
@@ -214,10 +213,9 @@ class BLE: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
         }
     }
     
-    func peripheral(peripheral: CBPeripheral, didDiscoverCharacteristicsForService service: CBService, error: NSError?) {
-        
+    func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
         if error != nil {
-            print("[ERROR] Error discovering characteristics. \(error!.description)")
+            print("[ERROR] Error discovering characteristics. \(error!.localizedDescription)")
             return
         }
         
@@ -230,11 +228,10 @@ class BLE: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
         enableNotifications(enable: true)
     }
     
-    func peripheral(peripheral: CBPeripheral, didUpdateValueForCharacteristic characteristic: CBCharacteristic, error: NSError?) {
-        
+    func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
         if error != nil {
             
-            print("[ERROR] Error updating value. \(error!.description)")
+            print("[ERROR] Error updating value. \(error!.localizedDescription)")
             return
         }
         
@@ -244,8 +241,9 @@ class BLE: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
         }
     }
     
-    func peripheral(peripheral: CBPeripheral, didReadRSSI RSSI: NSNumber, error: NSError?) {
-        self.RSSICompletionHandler?(RSSI, error)
+    func peripheral(_ peripheral: CBPeripheral, didReadRSSI RSSI: NSNumber, error: Error?) {
+        self.RSSICompletionHandler?(RSSI, error as NSError?)
         self.RSSICompletionHandler = nil
+
     }
 }
